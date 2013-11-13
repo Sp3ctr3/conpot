@@ -32,10 +32,6 @@ from requests.exceptions import Timeout, ConnectionError
 
 import conpot
 from conpot.logging.log_worker import LogWorker
-from conpot.snmp.snmp_server import SNMPServer
-from conpot.modbus.modbus_server import ModbusServer
-from conpot.http.web_server import HTTPServer
-from conpot.s7comm.s7_server import S7Server
 
 logger = logging.getLogger()
 package_directory = os.path.dirname(os.path.abspath(conpot.__file__))
@@ -154,6 +150,7 @@ def main():
 
     modbus_enabled = config.getboolean('modbus', 'enabled')
     if modbus_enabled:
+        from conpot.modbus.modbus_server import ModbusServer
         modbus_host = config.get('modbus', 'host')
         modbus_port = config.getint('modbus', 'port')
         modbus_instance = ModbusServer(args.template, log_queue)
@@ -161,6 +158,7 @@ def main():
 
     S7_enabled = config.getboolean('s7', 'enabled')
     if S7_enabled:
+        from conpot.s7comm.s7_server import S7Server
         S7_host = config.get('s7', 'host')
         S7_port = config.getint('s7', 'port')
         S7_instance = S7Server(args.template, log_queue)
@@ -170,10 +168,12 @@ def main():
     snmp_host = config.get('snmp', 'host')
     snmp_port = config.getint('snmp', 'port')
     if snmp_enabled:
+        from conpot.snmp.snmp_server import SNMPServer
         snmp_server = SNMPServer(snmp_host, snmp_port, args.template, log_queue, args.mibpaths, args.raw_mib)
 
     http_enabled = config.getboolean('http', 'enabled')
     if http_enabled:
+        from conpot.http.web_server import HTTPServer
         http_host = config.get('http', 'host')
         http_port = config.getint('http', 'port')
         http_server = HTTPServer(http_host, http_port, args.template, log_queue, args.www, snmp_port)
